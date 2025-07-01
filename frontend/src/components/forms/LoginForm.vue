@@ -18,7 +18,7 @@
       required
     />
 
-    <!-- <div class="flex items-center justify-between">
+    <div class="flex items-center justify-between">
       <label class="flex items-center">
         <input
           v-model="form.rememberMe"
@@ -30,7 +30,7 @@
       <a href="#" class="text-sm text-primary hover:text-secondary">
         Mot de passe oublié ?
       </a>
-    </div> -->
+    </div>
 
     <Button
       type="submit"
@@ -74,8 +74,8 @@ const handleSubmit = async () => {
     // Simulation d'une connexion
     await new Promise(resolve => setTimeout(resolve, 1500))
     
-    // Redirection vers le chat
-    router.push('/chat')
+    // Redirection vers le dashboard
+    router.push('/dashboard')
   } catch (error) {
     console.error('Erreur de connexion:', error)
   } finally {

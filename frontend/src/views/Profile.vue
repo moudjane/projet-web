@@ -41,10 +41,6 @@
                 {{ form.username || currentUser.username }}
               </h2>
               <p class="text-gray-600">{{ form.email || currentUser.email }}</p>
-              <div class="flex items-center mt-2">
-                <div class="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
-                <span class="text-sm text-gray-600">En ligne</span>
-              </div>
             </div>
           </div>
         </div>

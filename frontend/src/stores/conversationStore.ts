@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue'
 import type { Conversation, Message } from '../types'
+import { useUserStore } from './userStore'
 
 // Simulation de conversations
 const conversations = ref<Conversation[]>([
@@ -69,7 +70,7 @@ const messages = ref<Message[]>([
     id: '2',
     conversationId: '1',
     senderId: 'current',
-    content: 'oui très bien et toi ?',
+    content: 'Ça va bien merci ! Et toi ?',
     type: 'text',
     createdAt: new Date('2024-01-21T14:32:00'),
     isRead: true
@@ -103,14 +104,21 @@ export const useConversationStore = () => {
   }
   
   const createConversation = (participantIds: string[]) => {
-    // Logique pour créer une nouvelle conversation
+    const { getUserById } = useUserStore()
+    
+    // Récupérer les participants
+    const participants = participantIds
+      .map(id => getUserById(id))
+      .filter((user): user is NonNullable<ReturnType<typeof getUserById>> => user !== undefined)
+    
     const newConversation: Conversation = {
       id: Date.now().toString(),
-      participants: [], // À remplir avec les vrais utilisateurs
+      participants,
       updatedAt: new Date(),
       createdAt: new Date(),
-      isGroup: participantIds.length > 2
+      isGroup: participantIds.length > 1
     }
+    
     conversations.value.push(newConversation)
     return newConversation
   }

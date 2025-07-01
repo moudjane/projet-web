@@ -29,7 +29,7 @@
     <!-- Contenu principal -->
     <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <!-- Statistiques -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div class="bg-white rounded-lg shadow-md p-6">
           <div class="flex items-center">
             <div class="p-3 bg-primary bg-opacity-10 rounded-full">
@@ -46,24 +46,14 @@
 
         <div class="bg-white rounded-lg shadow-md p-6">
           <div class="flex items-center">
-            <div class="p-3 bg-green-100 rounded-full">
-              <div class="w-6 h-6 bg-green-500 rounded-full"></div>
+            <div class="p-3 bg-blue-100 rounded-full">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+              </svg>
             </div>
             <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">En ligne</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ onlineUsers.length }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6">
-          <div class="flex items-center">
-            <div class="p-3 bg-gray-100 rounded-full">
-              <div class="w-6 h-6 bg-gray-400 rounded-full"></div>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm font-medium text-gray-600">Hors ligne</p>
-              <p class="text-2xl font-semibold text-gray-900">{{ users.length - onlineUsers.length }}</p>
+              <p class="text-sm font-medium text-gray-600">Conversations actives</p>
+              <p class="text-2xl font-semibold text-gray-900">{{ activeConversations }}</p>
             </div>
           </div>
         </div>
@@ -79,15 +69,6 @@
               placeholder="Rechercher un utilisateur..."
               class="max-w-xs"
             />
-            
-            <select 
-              v-model="statusFilter"
-              class="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option value="all">Tous les statuts</option>
-              <option value="online">En ligne</option>
-              <option value="offline">Hors ligne</option>
-            </select>
           </div>
           
           <div class="text-sm text-gray-600">
@@ -110,16 +91,8 @@
           >
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-4">
-                <div class="relative">
-                  <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
-                    <span class="text-white font-semibold text-sm">{{ getUserInitials(user.username) }}</span>
-                  </div>
-                  <div 
-                    :class="[
-                      'absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-white',
-                      user.isOnline ? 'bg-green-500' : 'bg-gray-400'
-                    ]"
-                  ></div>
+                <div class="w-12 h-12 bg-primary rounded-full flex items-center justify-center">
+                  <span class="text-white font-semibold text-sm">{{ getUserInitials(user.username) }}</span>
                 </div>
                 
                 <div>
@@ -127,13 +100,6 @@
                     {{ user.username }}
                   </h3>
                   <p class="text-sm text-gray-600">{{ user.email }}</p>
-                  <p class="text-xs text-gray-500">
-                    <span v-if="user.isOnline" class="text-green-600">En ligne</span>
-                    <span v-else-if="user.lastSeen">
-                      Vu {{ formatLastSeen(user.lastSeen) }}
-                    </span>
-                    <span v-else>Hors ligne</span>
-                  </p>
                 </div>
               </div>
               
@@ -174,11 +140,10 @@ import { useConversationStore } from '../stores/conversationStore'
 import Input from '../components/ui/Input.vue'
 
 const router = useRouter()
-const { users, onlineUsers } = useUserStore()
-const { createConversation } = useConversationStore()
+const { users } = useUserStore()
+const { createConversation, conversations } = useConversationStore()
 
 const searchQuery = ref('')
-const statusFilter = ref('all')
 
 const filteredUsers = computed(() => {
   let filtered = users.value
@@ -192,14 +157,11 @@ const filteredUsers = computed(() => {
     )
   }
 
-  // Filtrer par statut
-  if (statusFilter.value === 'online') {
-    filtered = filtered.filter(user => user.isOnline)
-  } else if (statusFilter.value === 'offline') {
-    filtered = filtered.filter(user => !user.isOnline)
-  }
-
   return filtered
+})
+
+const activeConversations = computed(() => {
+  return conversations.value.length
 })
 
 const getUserInitials = (name: string) => {
@@ -211,19 +173,6 @@ const getUserInitials = (name: string) => {
   }
   
   return name.slice(0, 2).toUpperCase()
-}
-
-const formatLastSeen = (date: Date) => {
-  const now = new Date()
-  const diff = now.getTime() - new Date(date).getTime()
-  const minutes = Math.floor(diff / 60000)
-  const hours = Math.floor(diff / 3600000)
-  const days = Math.floor(diff / 86400000)
-
-  if (minutes < 1) return 'à l\'instant'
-  if (minutes < 60) return `il y a ${minutes}min`
-  if (hours < 24) return `il y a ${hours}h`
-  return `il y a ${days}j`
 }
 
 const startConversation = (userId: string) => {

@@ -1,21 +1,12 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-6">
-    <div class="grid grid-cols-2 gap-4">
-      <Input
-        id="firstName"
-        v-model="form.firstName"
-        label="Prénom"
-        placeholder="Prénom"
-        required
-      />
-      <Input
-        id="lastName"
-        v-model="form.lastName"
-        label="Nom"
-        placeholder="Nom"
-        required
-      />
-    </div>
+    <Input
+      id="username"
+      v-model="form.username"
+      label="Nom d'utilisateur"
+      placeholder="mon_username"
+      required
+    />
 
     <Input
       id="email"
@@ -76,16 +67,14 @@ const router = useRouter()
 const isLoading = ref(false)
 
 const form = reactive({
-  firstName: '',
-  lastName: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: ''
 })
 
 const isFormValid = computed(() => {
-  return form.firstName &&
-         form.lastName &&
+  return form.username &&
          form.email &&
          form.password &&
          form.confirmPassword &&

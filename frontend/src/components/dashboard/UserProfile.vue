@@ -54,6 +54,10 @@
 </template>
 
 <script setup lang="ts">
+import { ref, watchEffect } from 'vue'
+import { useQuery } from '@vue/apollo-composable'
+import { graphql } from '../../gql/gql'
+import type { GetUsersQuery } from '@/gql/graphql'
 import type { User } from '../../types'
 
 interface Props {
@@ -61,21 +65,42 @@ interface Props {
 }
 
 defineProps<Props>()
-
 defineEmits<{
   'edit-profile': []
   'new-conversation': []
   'logout': []
 }>()
 
+const GET_USERS = graphql(`
+  query GetUsers {
+    getAllUsers {
+      id
+      username
+      email
+    }
+  }
+`)
+
+const { result, loading, error } = useQuery(GET_USERS)
+const users = ref<GetUsersQuery['getAllUsers']>([])
+
+watchEffect(() => {
+  if (result.value?.getAllUsers) {
+    users.value = result.value.getAllUsers
+  }
+})
+
 const getUserInitials = (name: string) => {
   if (!name) return '?'
-  
+
   if (name.includes('_')) {
-    const parts = name.split('_')
-    return parts.map(part => part.charAt(0).toUpperCase()).join('').slice(0, 2)
+    return name
+      .split('_')
+      .map(p => p.charAt(0).toUpperCase())
+      .join('')
+      .slice(0, 2)
   }
-  
+
   return name.slice(0, 2).toUpperCase()
 }
 </script>

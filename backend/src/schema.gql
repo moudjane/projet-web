@@ -30,6 +30,7 @@ type MessageModel {
 type Query {
   me: UserModel!
   getAllUsers: [UserModel!]!
+  getUserById(id: String!): UserModel
   getMyConversations: [ConversationModel!]!
   getMessagesByConversation(conversationId: String!): [MessageModel!]!
 }

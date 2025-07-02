@@ -55,8 +55,8 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import Input from '../ui/Input.vue'
-import Button from '../ui/Button.vue'
+import Input from '../ui/InputComponent .vue'
+import Button from '../ui/ButtonComponent.vue'
 
 const router = useRouter()
 const isLoading = ref(false)

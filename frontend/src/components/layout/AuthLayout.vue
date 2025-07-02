@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import MessageLogo from '../ui/MessageLogo.vue'
+import MessageLogo from '../ui/MessageLogoComponent.vue'
 
 interface Props {
   title: string

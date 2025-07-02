@@ -81,7 +81,7 @@ const GET_USERS = graphql(`
   }
 `)
 
-const { result, loading, error } = useQuery(GET_USERS)
+const { result } = useQuery(GET_USERS)
 const users = ref<GetUsersQuery['getAllUsers']>([])
 
 watchEffect(() => {

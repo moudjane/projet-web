@@ -65,8 +65,8 @@
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMutation } from '@vue/apollo-composable'
-import Input from '../ui/Input.vue'
-import Button from '../ui/Button.vue'
+import Input from '../ui/InputComponent .vue'
+import Button from '../ui/ButtonComponent.vue'
 import { graphql } from '../../gql/gql'
 
 const SIGNUP = graphql(`
@@ -118,11 +118,17 @@ const handleSubmit = async () => {
 
     // Redirection si tout est ok
     router.push('/login')
-  } catch (error: any) {
-    if (error?.graphQLErrors?.[0]?.message) {
-      errorMsg.value = error.graphQLErrors[0].message
-    } else if (error?.message) {
-      errorMsg.value = error.message
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'graphQLErrors' in error) {
+      const graphQLError = error as { graphQLErrors: Array<{ message: string }> }
+      if (graphQLError.graphQLErrors?.[0]?.message) {
+        errorMsg.value = graphQLError.graphQLErrors[0].message
+      } else {
+        errorMsg.value = 'Erreur lors de la création du compte'
+      }
+    } else if (error && typeof error === 'object' && 'message' in error) {
+      const errorWithMessage = error as { message: string }
+      errorMsg.value = errorWithMessage.message
     } else {
       errorMsg.value = 'Erreur lors de la création du compte'
     }

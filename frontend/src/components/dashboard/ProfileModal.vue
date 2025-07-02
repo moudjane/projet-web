@@ -61,8 +61,8 @@
 
 <script setup lang="ts">
 import { reactive, watch } from 'vue'
-import Input from '../ui/Input.vue'
-import Button from '../ui/Button.vue'
+import Input from '../ui/InputComponent .vue'
+import Button from '../ui/ButtonComponent.vue'
 import type { User } from '../../types'
 
 interface Props {

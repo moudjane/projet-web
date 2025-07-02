@@ -115,7 +115,15 @@ const filteredUsers = computed(() => {
   return filtered
 })
 
-const getConversationName = (conversation: any) => {
+interface Conversation {
+  id: string
+  isGroup: boolean
+  name?: string
+  participants: Array<{ id: string; username: string }>
+  lastMessage?: { content: string }
+}
+
+const getConversationName = (conversation: Conversation) => {
   if (conversation.isGroup && conversation.name) {
     return conversation.name
   }

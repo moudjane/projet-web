@@ -86,12 +86,10 @@
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useConversationStore } from '../stores/conversationStore'
-import { useUserStore } from '../stores/userStore'
 import type { Conversation } from '../types'
 
 const route = useRoute()
 const { getConversationById, getMessagesByConversationId, sendMessage: addMessage } = useConversationStore()
-const { getUserById } = useUserStore()
 
 const conversationId = computed(() => route.params.id as string)
 const conversation = computed(() => getConversationById(conversationId.value))

@@ -86,7 +86,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, nextTick, watch } from 'vue'
 import { useConversationStore } from '../stores/conversationStore'
-import { useUserStore } from '../stores/userStore'
 import type { Conversation } from '../types'
 
 interface Props {
@@ -100,7 +99,6 @@ defineEmits<{
 }>()
 
 const { getConversationById, getMessagesByConversationId, sendMessage: addMessage } = useConversationStore()
-const { getUserById } = useUserStore()
 
 const conversation = computed(() => getConversationById(props.conversationId))
 const messages = computed(() => getMessagesByConversationId(props.conversationId))

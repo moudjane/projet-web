@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
 import { PrismaModule } from 'prisma/prisma.module';
+import { RabbitmqModule } from './rabbitmq/rabbitmq.module';
 
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
@@ -20,6 +21,7 @@ import { ConfigModule } from '@nestjs/config';
       playground: true,
     }),
     PrismaModule,
+    RabbitmqModule,
     AuthModule,
     UserModule,
     ConversationModule,

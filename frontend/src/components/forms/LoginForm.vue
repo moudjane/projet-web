@@ -41,6 +41,10 @@
       Se connecter
     </Button>
 
+    <div v-if="errorMsg" class="text-red-500 text-center mb-2">
+      {{ errorMsg }}
+    </div>
+
     <div class="text-center">
       <p class="text-gray-600">
         Pas encore de compte ?
@@ -55,11 +59,21 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
+import { useMutation } from '@vue/apollo-composable'
 import Input from '../ui/InputComponent .vue'
 import Button from '../ui/ButtonComponent.vue'
+import { graphql } from '../../gql/gql'
+
+// Déclaration de la mutation GraphQL typée avec codegen
+const LOGIN = graphql(`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password)
+  }
+`)
 
 const router = useRouter()
 const isLoading = ref(false)
+const errorMsg = ref<string | null>(null)
 
 const form = reactive({
   email: '',
@@ -67,17 +81,45 @@ const form = reactive({
   rememberMe: false
 })
 
+const { mutate: login } = useMutation(LOGIN)
+
 const handleSubmit = async () => {
   isLoading.value = true
-  
+  errorMsg.value = null
+
   try {
-    // Simulation d'une connexion
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // Redirection vers le dashboard
+    const result = await login({
+      email: form.email,
+      password: form.password,
+    })
+
+    if (!result || !result.data || !result.data.login) {
+      errorMsg.value = "Email ou mot de passe incorrect"
+      return
+    }
+
+    // Stockage du token selon le choix de l'utilisateur
+    if (form.rememberMe) {
+      localStorage.setItem('token', result.data.login)
+    } else {
+      sessionStorage.setItem('token', result.data.login)
+    }
+
     router.push('/dashboard')
-  } catch (error) {
-    console.error('Erreur de connexion:', error)
+  } catch (error: unknown) {
+    if (error && typeof error === 'object' && 'graphQLErrors' in error) {
+      const graphQLError = error as { graphQLErrors: Array<{ message: string }> }
+      if (graphQLError.graphQLErrors?.[0]?.message) {
+        errorMsg.value = graphQLError.graphQLErrors[0].message
+      } else {
+        errorMsg.value = 'Erreur de connexion'
+      }
+    } else if (error && typeof error === 'object' && 'message' in error) {
+      const errorWithMessage = error as { message: string }
+      errorMsg.value = errorWithMessage.message
+    } else {
+      errorMsg.value = 'Erreur de connexion'
+    }
   } finally {
     isLoading.value = false
   }

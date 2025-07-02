@@ -9,7 +9,7 @@
             class="text-gray-400 hover:text-gray-600"
           >
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -63,11 +63,11 @@
 import { reactive, watch } from 'vue'
 import Input from '../ui/InputComponent .vue'
 import Button from '../ui/ButtonComponent.vue'
-import type { User } from '../../types'
+import type { MeQuery } from '../../gql/graphql'
 
 interface Props {
   show: boolean
-  currentUser: User
+  currentUser: NonNullable<MeQuery['me']>
   isLoading: boolean
 }
 
@@ -85,12 +85,9 @@ const profileForm = reactive({
 
 const getUserInitials = (name: string) => {
   if (!name) return '?'
-  
   if (name.includes('_')) {
-    const parts = name.split('_')
-    return parts.map(part => part.charAt(0).toUpperCase()).join('').slice(0, 2)
+    return name.split('_').map(part => part.charAt(0).toUpperCase()).join('').slice(0, 2)
   }
-  
   return name.slice(0, 2).toUpperCase()
 }
 

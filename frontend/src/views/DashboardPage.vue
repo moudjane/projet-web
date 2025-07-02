@@ -3,8 +3,9 @@
     <!-- Sidebar des conversations -->
     <div class="w-1/3 bg-white border-r border-gray-200 flex flex-col">
       <!-- Profil utilisateur -->
-      <UserProfile 
-        :current-user="currentUser"
+      <UserProfile
+        v-if="me"
+        :current-user="me"
         @edit-profile="showProfileModal = true"
         @new-conversation="showUsersModal = true"
         @logout="logout"
@@ -17,9 +18,10 @@
       />
 
       <!-- Liste des conversations -->
-      <ConversationsList 
+      <ConversationsList
         :conversations="filteredConversations"
         :selected-conversation-id="selectedConversationId"
+        :current-user-id="me?.id || ''"
         @select-conversation="selectConversation"
         @new-conversation="showUsersModal = true"
       />
@@ -53,9 +55,10 @@
     />
 
     <!-- Modal de profil -->
-    <ProfileModal 
+    <ProfileModal
+      v-if="me"
       :show="showProfileModal"
-      :current-user="currentUser"
+      :current-user="me"
       :is-loading="isUpdatingProfile"
       @close="showProfileModal = false"
       @submit="updateProfile"
@@ -66,8 +69,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useConversationStore } from '../stores/conversationStore'
-import { useUserStore } from '../stores/userStore'
+import { useMutation, useQuery } from '@vue/apollo-composable'
 import ConversationView from '../components/ConversationView.vue'
 import UserProfile from '../components/dashboard/UserProfile.vue'
 import ConversationsList from '../components/dashboard/ConversationsList.vue'
@@ -75,10 +77,11 @@ import SearchBar from '../components/dashboard/SearchBar.vue'
 import UsersModal from '../components/dashboard/UsersModal.vue'
 import ProfileModal from '../components/dashboard/ProfileModal.vue'
 import EmptyState from '../components/dashboard/EmptyState.vue'
+import { GET_MY_CONVERSATIONS, GET_ALL_USERS, ME } from '../graphql/queries'
+import { CREATE_CONVERSATION, UPDATE_PROFILE } from '../graphql/mutations'
+import type { GetMyConversationsQuery } from '@/gql/graphql'
 
 const router = useRouter()
-const { conversations, createConversation } = useConversationStore()
-const { currentUser, users, updateUserProfile } = useUserStore()
 
 const searchQuery = ref('')
 const userSearchQuery = ref('')
@@ -87,14 +90,23 @@ const showProfileModal = ref(false)
 const showUsersModal = ref(false)
 const isUpdatingProfile = ref(false)
 
+const { result: conversationsResult, refetch: refetchConversations } = useQuery(GET_MY_CONVERSATIONS)
+const { result: usersResult } = useQuery(GET_ALL_USERS)
+const { result: meResult } = useQuery(ME)
+
+const me = computed(() => meResult.value?.me)
+const conversations = computed(() => conversationsResult.value?.getMyConversations || [])
+const users = computed(() => usersResult.value?.getAllUsers || [])
+
+console.log('me', me.value)
+
 const filteredConversations = computed(() => {
   let filtered = conversations.value
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     filtered = filtered.filter(conversation => 
-      getConversationName(conversation).toLowerCase().includes(query) ||
-      conversation.lastMessage?.content.toLowerCase().includes(query)
+      getConversationName(conversation).toLowerCase().includes(query)
     )
   }
 
@@ -115,52 +127,54 @@ const filteredUsers = computed(() => {
   return filtered
 })
 
-interface Conversation {
-  id: string
-  isGroup: boolean
-  name?: string
-  participants: Array<{ id: string; username: string }>
-  lastMessage?: { content: string }
-}
-
-const getConversationName = (conversation: Conversation) => {
-  if (conversation.isGroup && conversation.name) {
-    return conversation.name
-  }
-  
-  const participant = conversation.participants[0]
-  return participant ? participant.username : 'Conversation'
+const getConversationName = (conversation: GetMyConversationsQuery['getMyConversations'][0]) => {
+  // In cas we add group conversations in the future
+  // if (conversation.isGroup && conversation.title) {
+  //   return conversation.title
+  // }
+  const otherParticipant = conversation.users?.find(u => u.id !== me.value?.id)
+  return otherParticipant?.username || 'Conversation'
 }
 
 const selectConversation = (conversationId: string) => {
   selectedConversationId.value = conversationId
 }
 
-const startConversationWithUser = (userId: string) => {
-  // Vérifier si une conversation existe déjà avec cet utilisateur
-  const existingConversation = conversations.value.find(conv => 
-    !conv.isGroup && conv.participants.some(p => p.id === userId)
+const { mutate: createConversationMutation } = useMutation(CREATE_CONVERSATION)
+const startConversationWithUser = async (userId: string) => {
+  const existing = conversations.value.find(conv => 
+    /** !conv.isGroup && */ conv.users.some(u => u.id === userId)
   )
-  
-  if (existingConversation) {
-    selectedConversationId.value = existingConversation.id
+
+  if (existing) {
+    selectedConversationId.value = existing.id
   } else {
-    // Créer une nouvelle conversation
-    const newConversation = createConversation([userId])
-    selectedConversationId.value = newConversation.id
+    const result = await createConversationMutation({
+      title: '',
+      targetUserId: userId
+    })
+    if (result?.data?.createConversation) {
+      await refetchConversations()
+      selectedConversationId.value = result.data.createConversation.id
+    }
   }
-  
+
   showUsersModal.value = false
   userSearchQuery.value = ''
 }
 
+const { mutate: updateProfileMutation } = useMutation(UPDATE_PROFILE)
 const updateProfile = async (form: { username: string; email: string }) => {
   isUpdatingProfile.value = true
-  
+
   try {
-    await new Promise(resolve => setTimeout(resolve, 1000))
-    
-    updateUserProfile(currentUser.value.id, form)
+    await updateProfileMutation({
+      updateProfileData: {
+        username: form.username,
+        email: form.email,
+        oldPassword: 'placeholder' // remplace avec une vraie valeur
+      }
+    })
     showProfileModal.value = false
   } catch (error) {
     console.error('Erreur lors de la mise à jour:', error)

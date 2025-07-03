@@ -96,12 +96,7 @@ const { result: conversationsResult } = useQuery(GET_CONVERSATION_BY_ID)
 const { result: messagesResult, refetch: refetchMessages } = useQuery(GET_MESSAGES_BY_CONVERSATION, () => ({
   conversationId: props.conversationId
 }))
-
-const currentUserId = ref<string>('')
 const { result: meResult } = useQuery(ME)
-watch(meResult, () => {
-  if (meResult.value?.me.id) currentUserId.value = meResult.value.me.id
-})
 
 const conversation = computed(() => {
   return conversationsResult.value?.getMyConversations.find(c => c.id === props.conversationId)
@@ -110,6 +105,8 @@ const conversation = computed(() => {
 const messages = computed(() => {
   return messagesResult.value?.getMessagesByConversation ?? []
 })
+
+const currentUserId = computed(() => meResult.value?.me.id ?? '')
 
 const newMessage = ref('')
 const messagesContainer = ref<HTMLElement>()

@@ -65,12 +65,12 @@ The API will be available at http://localhost:4000/graphql.
 
 ## Code Architecture
 
-src/auth/ — Authentication logic (signup, login, JWT, guards)
-src/user/ — User management
-src/conversation/ — Conversation management
-src/message/ — Message handling
-src/rabbitmq/ — RabbitMQ connection and publisher
-prisma/ — Prisma schema and migrations
+- src/auth/ — Authentication logic (signup, login, JWT, guards)
+- src/user/ — User management
+- src/conversation/ — Conversation management
+- src/message/ — Message handling
+- src/rabbitmq/ — RabbitMQ connection and publisher
+- prisma/ — Prisma schema and migrations
 
 ---
 

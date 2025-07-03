@@ -24,6 +24,12 @@ npm run dev
 
 ---
 
+### Environment Variables
+
+Create a `.env` file and copy the content of `.env.example` into your new `.env` file.  
+
+---
+
 ### Project structure
 
 ```sh

@@ -93,9 +93,13 @@ import type { GetConversationByIdQuery } from '@/gql/graphql';
 const props = defineProps<{ conversationId: string }>()
 
 const { result: conversationsResult } = useQuery(GET_CONVERSATION_BY_ID)
-const { result: messagesResult, refetch: refetchMessages } = useQuery(GET_MESSAGES_BY_CONVERSATION, () => ({
-  conversationId: props.conversationId
-}))
+const { result: messagesResult, refetch: refetchMessages } = useQuery(
+  GET_MESSAGES_BY_CONVERSATION,
+  () => ({ conversationId: props.conversationId }),
+  {
+    pollInterval: 2000
+  }
+)
 const { result: meResult } = useQuery(ME)
 
 const conversation = computed(() => {

@@ -22,7 +22,7 @@ type Documents = {
     "\n  query GetConversationById($id: String!) {\n    getMyConversations {\n      id\n      title\n      users {\n        id\n        username\n      }\n    }\n  }\n": typeof types.GetConversationByIdDocument,
     "\n  query GetMessagesByConversation($conversationId: String!) {\n    getMessagesByConversation(conversationId: $conversationId) {\n      id\n      content\n      createdAt\n      user {\n        id\n        username\n      }\n    }\n  }\n": typeof types.GetMessagesByConversationDocument,
     "\n  query Me {\n    me {\n      id\n      username\n      email\n    }\n  }\n": typeof types.MeDocument,
-    "\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n    }\n  }\n": typeof types.GetMyConversationsDocument,
+    "\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n      messages {\n        id\n        content\n        createdAt\n        user {\n          id\n          username\n        }\n      }\n    }\n  }\n": typeof types.GetMyConversationsDocument,
     "\n  query GetAllUsers {\n    getAllUsers {\n      id\n      username\n      email\n    }\n  }\n": typeof types.GetAllUsersDocument,
 };
 const documents: Documents = {
@@ -34,7 +34,7 @@ const documents: Documents = {
     "\n  query GetConversationById($id: String!) {\n    getMyConversations {\n      id\n      title\n      users {\n        id\n        username\n      }\n    }\n  }\n": types.GetConversationByIdDocument,
     "\n  query GetMessagesByConversation($conversationId: String!) {\n    getMessagesByConversation(conversationId: $conversationId) {\n      id\n      content\n      createdAt\n      user {\n        id\n        username\n      }\n    }\n  }\n": types.GetMessagesByConversationDocument,
     "\n  query Me {\n    me {\n      id\n      username\n      email\n    }\n  }\n": types.MeDocument,
-    "\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n    }\n  }\n": types.GetMyConversationsDocument,
+    "\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n      messages {\n        id\n        content\n        createdAt\n        user {\n          id\n          username\n        }\n      }\n    }\n  }\n": types.GetMyConversationsDocument,
     "\n  query GetAllUsers {\n    getAllUsers {\n      id\n      username\n      email\n    }\n  }\n": types.GetAllUsersDocument,
 };
 
@@ -87,7 +87,7 @@ export function graphql(source: "\n  query Me {\n    me {\n      id\n      usern
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n      messages {\n        id\n        content\n        createdAt\n        user {\n          id\n          username\n        }\n      }\n    }\n  }\n"): (typeof documents)["\n  query GetMyConversations {\n    getMyConversations {\n      id\n      title\n      createdAt\n      users {\n        id\n        username\n        email\n      }\n      messages {\n        id\n        content\n        createdAt\n        user {\n          id\n          username\n        }\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

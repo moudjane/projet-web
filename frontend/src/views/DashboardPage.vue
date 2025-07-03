@@ -1,68 +1,30 @@
 <template>
   <div class="h-screen bg-gray flex">
-    <!-- Sidebar des conversations -->
     <div class="w-1/3 bg-white border-r border-gray-200 flex flex-col">
-      <!-- Profil utilisateur -->
-      <UserProfile
-        v-if="me"
-        :current-user="me"
-        @edit-profile="showProfileModal = true"
-        @new-conversation="showUsersModal = true"
-        @logout="logout"
-      />
+      <UserProfile v-if="me" :current-user="me" @edit-profile="showProfileModal = true"
+        @new-conversation="showUsersModal = true" @logout="logout" />
 
-      <!-- Barre de recherche -->
-      <SearchBar 
-        v-model="searchQuery"
-        placeholder="Rechercher une discussion"
-      />
+      <SearchBar v-model="searchQuery" placeholder="Rechercher une discussion" />
 
-      <!-- Liste des conversations -->
-      <ConversationsList
-        :conversations="filteredConversations"
-        :selected-conversation-id="selectedConversationId"
-        :current-user-id="me?.id || ''"
-        @select-conversation="selectConversation"
-        @new-conversation="showUsersModal = true"
-      />
+      <ConversationsList :conversations="filteredConversations" :selected-conversation-id="selectedConversationId"
+        :current-user-id="me?.id || ''" @select-conversation="selectConversation"
+        @new-conversation="showUsersModal = true" />
     </div>
 
-    <!-- Zone principale -->
     <div class="flex-1 flex flex-col">
-      <!-- Conversation sélectionnée -->
       <div v-if="selectedConversationId" class="flex-1">
-        <ConversationView 
-          :conversation-id="selectedConversationId" 
-          @back="selectedConversationId = null"
-        />
+        <ConversationView :conversation-id="selectedConversationId" @back="selectedConversationId = null" />
       </div>
-      
-      <!-- État par défaut -->
-      <EmptyState 
-        v-else
-        @new-conversation="showUsersModal = true"
-      />
+
+      <EmptyState v-else @new-conversation="showUsersModal = true" />
     </div>
 
-    <!-- Modal des utilisateurs -->
-    <UsersModal 
-      :show="showUsersModal"
-      :users="filteredUsers"
-      :search-query="userSearchQuery"
-      @close="showUsersModal = false"
-      @select-user="startConversationWithUser"
-      @update:search-query="userSearchQuery = $event"
-    />
+    <UsersModal :show="showUsersModal" :users="filteredUsers" :search-query="userSearchQuery"
+      @close="showUsersModal = false" @select-user="startConversationWithUser"
+      @update:search-query="userSearchQuery = $event" />
 
-    <!-- Modal de profil -->
-    <ProfileModal
-      v-if="me"
-      :show="showProfileModal"
-      :current-user="me"
-      :is-loading="isUpdatingProfile"
-      @close="showProfileModal = false"
-      @submit="updateProfile"
-    />
+    <ProfileModal v-if="me" :show="showProfileModal" :current-user="me" :is-loading="isUpdatingProfile"
+      @close="showProfileModal = false" @submit="updateProfile" />
   </div>
 </template>
 
@@ -70,6 +32,7 @@
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useMutation, useQuery } from '@vue/apollo-composable'
+import { useAuthStore } from '@/stores/auth'
 import ConversationView from '../components/ConversationView.vue'
 import UserProfile from '../components/dashboard/UserProfile.vue'
 import ConversationsList from '../components/dashboard/ConversationsList.vue'
@@ -82,6 +45,7 @@ import { CREATE_CONVERSATION, UPDATE_PROFILE } from '../graphql/mutations'
 import type { GetMyConversationsQuery } from '@/gql/graphql'
 
 const router = useRouter()
+const authStore = useAuthStore()
 
 const searchQuery = ref('')
 const userSearchQuery = ref('')
@@ -98,40 +62,30 @@ const me = computed(() => meResult.value?.me)
 const conversations = computed(() => conversationsResult.value?.getMyConversations || [])
 const users = computed(() => usersResult.value?.getAllUsers || [])
 
-console.log('me', me.value)
-
 const filteredConversations = computed(() => {
   let filtered = conversations.value
-
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(conversation => 
+    filtered = filtered.filter(conversation =>
       getConversationName(conversation).toLowerCase().includes(query)
     )
   }
-
   return filtered
 })
 
 const filteredUsers = computed(() => {
   let filtered = users.value
-
   if (userSearchQuery.value) {
     const query = userSearchQuery.value.toLowerCase()
-    filtered = filtered.filter(user => 
+    filtered = filtered.filter(user =>
       user.username.toLowerCase().includes(query) ||
       user.email.toLowerCase().includes(query)
     )
   }
-
   return filtered
 })
 
 const getConversationName = (conversation: GetMyConversationsQuery['getMyConversations'][0]) => {
-  // In cas we add group conversations in the future
-  // if (conversation.isGroup && conversation.title) {
-  //   return conversation.title
-  // }
   const otherParticipant = conversation.users?.find(u => u.id !== me.value?.id)
   return otherParticipant?.username || 'Conversation'
 }
@@ -142,8 +96,8 @@ const selectConversation = (conversationId: string) => {
 
 const { mutate: createConversationMutation } = useMutation(CREATE_CONVERSATION)
 const startConversationWithUser = async (userId: string) => {
-  const existing = conversations.value.find(conv => 
-    /** !conv.isGroup && */ conv.users.some(u => u.id === userId)
+  const existing = conversations.value.find(conv =>
+    conv.users.some(u => u.id === userId)
   )
 
   if (existing) {
@@ -184,6 +138,7 @@ const updateProfile = async (form: { username: string; email: string }) => {
 }
 
 const logout = () => {
+  authStore.clearToken()
   router.push('/login')
 }
 </script>

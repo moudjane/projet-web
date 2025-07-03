@@ -63,6 +63,7 @@ import { useMutation } from '@vue/apollo-composable'
 import Input from '../ui/InputComponent .vue'
 import Button from '../ui/ButtonComponent.vue'
 import { graphql } from '../../gql/gql'
+import { useAuthStore } from '@/stores/auth'
 
 // Déclaration de la mutation GraphQL typée avec codegen
 const LOGIN = graphql(`
@@ -93,16 +94,19 @@ const handleSubmit = async () => {
       password: form.password,
     })
 
+    console.log('Login mutation result:', result)
+
     if (!result || !result.data || !result.data.login) {
       errorMsg.value = "Email ou mot de passe incorrect"
       return
     }
 
-    // Stockage du token selon le choix de l'utilisateur
+    const authStore = useAuthStore()
+
     if (form.rememberMe) {
-      localStorage.setItem('token', result.data.login)
+      authStore.setToken(result.data.login, true)
     } else {
-      sessionStorage.setItem('token', result.data.login)
+      authStore.setToken(result.data.login, false)
     }
 
     router.push('/dashboard')

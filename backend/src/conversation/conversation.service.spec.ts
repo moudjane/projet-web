@@ -73,6 +73,18 @@ describe('ConversationService', () => {
           users: [
             { id: 'user1', username: 'user1', email: 'user1@example.com' },
           ],
+          messages: [
+            {
+              id: 'msg1',
+              content: 'Last message',
+              createdAt: new Date(),
+              user: {
+                id: 'user2',
+                username: 'user2',
+                email: 'user2@example.com',
+              },
+            },
+          ],
         },
         {
           id: 'conv2',
@@ -81,6 +93,18 @@ describe('ConversationService', () => {
           updatedAt: new Date(),
           users: [
             { id: 'user1', username: 'user1', email: 'user1@example.com' },
+          ],
+          messages: [
+            {
+              id: 'msg2',
+              content: 'last message 2',
+              createdAt: new Date(),
+              user: {
+                id: 'user3',
+                username: 'user3',
+                email: 'user3@example.com',
+              },
+            },
           ],
         },
       ];
@@ -91,11 +115,18 @@ describe('ConversationService', () => {
 
       const result = await service.getUserConversations('user1');
 
-      expect(result).toEqual(mockConversations);
       expect(prisma.conversation.findMany).toHaveBeenCalledWith({
         where: { users: { some: { id: 'user1' } } },
-        include: { users: true },
+        include: {
+          users: true,
+          messages: {
+            orderBy: { createdAt: 'desc' },
+            take: 1,
+            include: { user: true },
+          },
+        },
       });
+      expect(result).toEqual(mockConversations);
     });
   });
 });

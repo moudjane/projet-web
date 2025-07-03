@@ -39,6 +39,8 @@ RabbitMQ is integrated for asynchronous message handling.
 npm install
 ```
 
+---
+
 ## Running the Project
 
 ### Generate prisma client
@@ -59,6 +61,8 @@ npm run start:dev
 
 The API will be available at http://localhost:4000/graphql.
 
+---
+
 ## Code Architecture
 
 src/auth/ — Authentication logic (signup, login, JWT, guards)
@@ -68,6 +72,8 @@ src/message/ — Message handling
 src/rabbitmq/ — RabbitMQ connection and publisher
 prisma/ — Prisma schema and migrations
 
+---
+
 ## Main Features
 
 - User registration and authentication with JWT
@@ -75,6 +81,8 @@ prisma/ — Prisma schema and migrations
 - Sending and fetching messages within conversations
 - Publishing messages via RabbitMQ for asynchronous processing
 - Securing API endpoints with JWT guards
+
+---
 
 ## Testing
 

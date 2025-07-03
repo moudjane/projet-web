@@ -65,7 +65,6 @@ import Button from '../ui/ButtonComponent.vue'
 import { graphql } from '../../gql/gql'
 import { useAuthStore } from '@/stores/auth'
 
-// Déclaration de la mutation GraphQL typée avec codegen
 const LOGIN = graphql(`
   mutation Login($email: String!, $password: String!) {
     login(email: $email, password: $password)
@@ -94,20 +93,13 @@ const handleSubmit = async () => {
       password: form.password,
     })
 
-    console.log('Login mutation result:', result)
-
     if (!result || !result.data || !result.data.login) {
       errorMsg.value = "Email ou mot de passe incorrect"
       return
     }
 
     const authStore = useAuthStore()
-
-    if (form.rememberMe) {
-      authStore.setToken(result.data.login, true)
-    } else {
-      authStore.setToken(result.data.login, false)
-    }
+    authStore.setToken(result.data.login, form.rememberMe)
 
     router.push('/dashboard')
   } catch (error: unknown) {

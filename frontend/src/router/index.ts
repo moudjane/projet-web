@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/auth' // adapte le chemin si besoin
 import Login from '../views/LoginPage.vue'
 import Register from '../views/RegisterPage.vue'
 import Dashboard from '../views/DashboardPage.vue'
@@ -29,11 +30,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  if (to.meta.requiresAuth) {
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token')
-    if (!token) {
-      return next({ path: '/login' })
-    }
+  const authStore = useAuthStore()
+  authStore.loadToken()
+  if (to.meta.requiresAuth && !authStore.token) {
+    return next({ path: '/login' })
   }
   next()
 })

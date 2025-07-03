@@ -11,7 +11,7 @@ git clone git@github.com:moudjane/projet-web.git
 ```
 
 ```sh
-cd projet-web
+cd projet-web/frontend
 ```
 
 ```sh

@@ -16,12 +16,12 @@
 
           <div v-if="conversation" class="flex items-center space-x-3">
             <div class="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
-              <span class="text-white font-semibold text-sm">{{ getUserInitials(conversation.title) }}</span>
+              <span class="text-white font-semibold text-sm">{{ getUserInitials(getConversationName(conversation)) }}</span>
             </div>
 
             <div>
               <h1 class="text-lg font-semibold text-gray-900">
-                {{ conversation.title }}
+                {{ getConversationName(conversation) }}
               </h1>
             </div>
           </div>
@@ -88,6 +88,7 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useMutation, useQuery } from '@vue/apollo-composable'
 import { GET_CONVERSATION_BY_ID, GET_MESSAGES_BY_CONVERSATION, ME } from '@/graphql/queries';
 import { SEND_MESSAGE } from '@/graphql/mutations';
+import type { GetConversationByIdQuery } from '@/gql/graphql';
 
 const props = defineProps<{ conversationId: string }>()
 
@@ -117,6 +118,14 @@ const getUserInitials = (name: string) => {
   if (!name) return '?'
   if (name.includes('_')) return name.split('_').map(p => p[0].toUpperCase()).join('').slice(0, 2)
   return name.slice(0, 2).toUpperCase()
+}
+
+const getConversationName = (conversation: GetConversationByIdQuery['getMyConversations'][0]) => {
+  if (/** conversation.isGroup && */ conversation.title) {
+    return conversation.title
+  }
+  const participant = conversation.users.find(u => u.id !== currentUserId.value)
+  return participant?.username || 'Conversation'
 }
 
 const formatMessageTime = (date: string) => {

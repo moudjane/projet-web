@@ -87,6 +87,7 @@ const filteredUsers = computed(() => {
 
 const getConversationName = (conversation: GetMyConversationsQuery['getMyConversations'][0]) => {
   const otherParticipant = conversation.users?.find(u => u.id !== me.value?.id)
+  console.log('getConversationName called with conversation:', conversation, 'otherParticipant:', otherParticipant)
   return otherParticipant?.username || 'Conversation'
 }
 

@@ -13,25 +13,25 @@
         <span class="text-white font-semibold text-sm">{{ getUserInitials(getConversationName(conversation)) }}</span>
       </div>
       
-      <!-- <div class="flex-1 min-w-0">
+      <div class="flex-1 min-w-0">
         <div class="flex items-center justify-between mb-1">
           <h3 class="text-sm font-medium text-gray-900 truncate">
             {{ getConversationName(conversation) }}
           </h3>
-          <span class="text-xs text-gray-500">
+          <!-- <span class="text-xs text-gray-500">
             {{ formatDate(conversation.updatedAt) }}
-          </span>
+          </span> -->
         </div>
         
-        <div class="flex items-center justify-between">
+        <!-- <div class="flex items-center justify-between">
           <p class="text-sm text-gray-600 truncate">
             <span v-if="conversation.lastMessage?.user.id === currentUserId" class="text-gray-500">
               Vous: 
             </span>
             {{ conversation.lastMessage?.content || 'Aucun message' }}
           </p>
-        </div>
-      </div> -->
+        </div> -->
+      </div>
     </div>
     
     <div v-if="conversations.length === 0" class="px-4 py-8 text-center">

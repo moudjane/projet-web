@@ -1,19 +1,25 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core'
 import { setContext } from '@apollo/client/link/context'
 import { useAuthStore } from '@/stores/auth'
-import { createPinia } from 'pinia'
+import type { Pinia } from 'pinia'
 
-const pinia = createPinia()
+let _pinia: Pinia | null = null
+
+export function setPiniaInstance(piniaInstance: Pinia): void {
+  _pinia = piniaInstance
+
+  // Load token into the store from localStorage/sessionStorage at startup
+  const authStore = useAuthStore(_pinia)
+  authStore.loadToken()
+}
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
 })
 
 const authLink = setContext((_, { headers }) => {
-  const authStore = useAuthStore(pinia)
+  const authStore = useAuthStore(_pinia)
   const token = authStore.token
-
-  console.log('Auth token:', token)
 
   return {
     headers: {

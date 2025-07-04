@@ -98,7 +98,6 @@ const handleSubmit = async () => {
   errorMsg.value = null
 
   try {
-    // Peut être null, donc on vérifie
     const result = await signup({
       username: form.username,
       email: form.email,
@@ -110,7 +109,6 @@ const handleSubmit = async () => {
       return
     }
 
-    // Redirection si tout est ok
     router.push('/login')
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'graphQLErrors' in error) {

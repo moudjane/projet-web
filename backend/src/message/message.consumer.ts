@@ -1,6 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RabbitmqService } from '../rabbitmq/rabbitmq.service';
+import { randomUUID } from 'crypto';
 
 interface MessagePayload {
   content: string;
@@ -20,6 +21,9 @@ export class MessageConsumer implements OnModuleInit {
   }
 
   private async consumeMessages() {
+    // Générer un identifiant unique pour cette instance du consumer
+    const consumerId = randomUUID();
+
     await this.rabbitmqService.consumeMessages(
       async (message: MessagePayload) => {
         try {
@@ -37,13 +41,19 @@ export class MessageConsumer implements OnModuleInit {
             },
           });
 
-          console.log(`Message saved to database: ${savedMessage.id}`);
+          console.log(
+            `Consumer ${consumerId}: Message saved to database: ${savedMessage.id}`,
+          );
         } catch (error) {
-          console.error('Error processing message:', error);
+          console.error(
+            `Consumer ${consumerId}: Error processing message:`,
+            error,
+          );
         }
       },
+      consumerId, // Passer l'identifiant unique au service RabbitMQ
     );
 
-    console.log('Message consumer started');
+    console.log(`Message consumer started with ID: ${consumerId}`);
   }
 }

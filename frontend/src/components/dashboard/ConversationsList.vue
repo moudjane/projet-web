@@ -19,16 +19,16 @@
             {{ getConversationName(conversation) }}
           </h3>
           <span class="text-xs text-gray-500">
-            {{ formatDate(conversation.updatedAt) }}
+            {{ formatDate(conversation.messages[0]?.createdAt) }}
           </span>
         </div>
         
         <div class="flex items-center justify-between">
           <p class="text-sm text-gray-600 truncate">
-            <span v-if="conversation.lastMessage?.senderId === 'current'" class="text-gray-500">
+            <span v-if="conversation.messages[0]?.user.id === currentUserId" class="text-gray-500">
               Vous: 
             </span>
-            {{ conversation.lastMessage?.content || 'Aucun message' }}
+            {{ conversation.messages[0]?.content || 'Aucun message' }}
           </p>
         </div>
       </div>
@@ -36,7 +36,7 @@
     
     <div v-if="conversations.length === 0" class="px-4 py-8 text-center">
       <svg class="w-12 h-12 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
       <p class="text-gray-600 mb-4 text-sm">Aucune conversation trouvée</p>
       <button 
@@ -50,14 +50,15 @@
 </template>
 
 <script setup lang="ts">
-import type { Conversation } from '../../types'
+import type { GetMyConversationsQuery, MeQuery } from '../../gql/graphql'
 
 interface Props {
-  conversations: Conversation[]
+  conversations: GetMyConversationsQuery['getMyConversations']
   selectedConversationId: string | null
+  currentUserId: MeQuery['me']['id']
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 defineEmits<{
   'select-conversation': [id: string]
@@ -66,25 +67,22 @@ defineEmits<{
 
 const getUserInitials = (name: string) => {
   if (!name) return '?'
-  
   if (name.includes('_')) {
     const parts = name.split('_')
     return parts.map(part => part.charAt(0).toUpperCase()).join('').slice(0, 2)
   }
-  
   return name.slice(0, 2).toUpperCase()
 }
 
-const getConversationName = (conversation: Conversation) => {
-  if (conversation.isGroup && conversation.name) {
-    return conversation.name
+const getConversationName = (conversation: GetMyConversationsQuery['getMyConversations'][0]) => {
+  if (/** conversation.isGroup && */ conversation.title) {
+    return conversation.title
   }
-  
-  const participant = conversation.participants[0]
-  return participant ? participant.username : 'Conversation'
+  const participant = conversation.users.find(u => u.id !== props.currentUserId)
+  return participant?.username || 'Conversation'
 }
 
-const formatDate = (date: Date) => {
+const formatDate = (date: string) => {
   const now = new Date()
   const messageDate = new Date(date)
   const diff = now.getTime() - messageDate.getTime()
@@ -97,10 +95,10 @@ const formatDate = (date: Date) => {
   if (hours < 24) return `${hours}h`
   if (days === 1) return 'hier'
   if (days < 7) return `${days}j`
-  
-  return messageDate.toLocaleDateString('fr-FR', { 
-    day: 'numeric', 
-    month: 'short' 
+
+  return messageDate.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short'
   })
 }
 </script>

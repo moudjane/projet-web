@@ -1,13 +1,25 @@
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client/core'
 import { setContext } from '@apollo/client/link/context'
-import { DefaultApolloClient } from '@vue/apollo-composable'
+import { useAuthStore } from '@/stores/auth'
+import type { Pinia } from 'pinia'
+
+let _pinia: Pinia | null = null
+
+export function setPiniaInstance(piniaInstance: Pinia): void {
+  _pinia = piniaInstance
+
+  // Load token into the store from localStorage/sessionStorage at startup
+  const authStore = useAuthStore(_pinia)
+  authStore.loadToken()
+}
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:4000/graphql',
 })
 
 const authLink = setContext((_, { headers }) => {
-  const token = "zeiruhaçuzetgiauzgigogiugeroiearg"
+  const authStore = useAuthStore(_pinia)
+  const token = authStore.token
 
   return {
     headers: {

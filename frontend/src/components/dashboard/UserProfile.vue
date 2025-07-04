@@ -23,7 +23,7 @@
           title="Nouvelle conversation"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
           </svg>
         </button>
         <button 
@@ -32,7 +32,7 @@
           title="Modifier le profil"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
           </svg>
         </button>
         <button 
@@ -41,7 +41,7 @@
           title="Se déconnecter"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
         </button>
       </div>
@@ -54,41 +54,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
-import { useQuery } from '@vue/apollo-composable'
-import { graphql } from '../../gql/gql'
-import type { GetUsersQuery } from '@/gql/graphql'
-import type { User } from '../../types'
+import type { MeQuery } from '@/gql/graphql'
 
 interface Props {
-  currentUser: User
+  currentUser: NonNullable<MeQuery['me']>
 }
 
 defineProps<Props>()
+
 defineEmits<{
   'edit-profile': []
   'new-conversation': []
   'logout': []
 }>()
-
-const GET_USERS = graphql(`
-  query GetUsers {
-    getAllUsers {
-      id
-      username
-      email
-    }
-  }
-`)
-
-const { result, loading, error } = useQuery(GET_USERS)
-const users = ref<GetUsersQuery['getAllUsers']>([])
-
-watchEffect(() => {
-  if (result.value?.getAllUsers) {
-    users.value = result.value.getAllUsers
-  }
-})
 
 const getUserInitials = (name: string) => {
   if (!name) return '?'

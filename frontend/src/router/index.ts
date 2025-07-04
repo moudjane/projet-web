@@ -1,40 +1,41 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Login from '../views/Login.vue'
-import Register from '../views/Register.vue'
-import Dashboard from '../views/Dashboard.vue'
-import ConversationDetail from '../views/ConversationDetail.vue'
+import { useAuthStore } from '@/stores/auth' // adapte le chemin si besoin
+import Login from '../views/LoginPage.vue'
+import Register from '../views/RegisterPage.vue'
+import Dashboard from '../views/DashboardPage.vue'
+import ConversationDetail from '../views/ConversationDetailPage.vue'
 
 const routes = [
-  {
-    path: '/',
-    redirect: '/login'
-  },
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login
-  },
-  {
-    path: '/register',
-    name: 'Register',
-    component: Register
-  },
+  { path: '/', redirect: '/login' },
+  { path: '/login', name: 'Login', component: Login },
+  { path: '/register', name: 'Register', component: Register },
   {
     path: '/dashboard',
     name: 'Dashboard',
-    component: Dashboard
+    component: Dashboard,
+    meta: { requiresAuth: true }
   },
   {
     path: '/conversation/:id',
     name: 'ConversationDetail',
     component: ConversationDetail,
-    props: true
+    props: true,
+    meta: { requiresAuth: true }
   }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore()
+  authStore.loadToken()
+  if (to.meta.requiresAuth && !authStore.token) {
+    return next({ path: '/login' })
+  }
+  next()
 })
 
 export default router

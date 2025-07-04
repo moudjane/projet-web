@@ -28,7 +28,14 @@ export class ConversationService {
           some: { id: userId },
         },
       },
-      include: { users: true },
+      include: {
+        users: true,
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          include: { user: true },
+        },
+      },
     });
   }
 

@@ -8,18 +8,6 @@ type UserModel {
   email: String!
 }
 
-type ConversationModel {
-  id: ID!
-  title: String!
-  createdAt: DateTime!
-  users: [UserModel!]!
-}
-
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
-
 type MessageModel {
   id: ID!
   content: String!
@@ -27,9 +15,23 @@ type MessageModel {
   user: UserModel!
 }
 
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type ConversationModel {
+  id: ID!
+  title: String!
+  createdAt: DateTime!
+  users: [UserModel!]!
+  messages: [MessageModel!]!
+}
+
 type Query {
   me: UserModel!
   getAllUsers: [UserModel!]!
+  getUserById(id: String!): UserModel
   getMyConversations: [ConversationModel!]!
   getMessagesByConversation(conversationId: String!): [MessageModel!]!
 }

@@ -47,7 +47,11 @@ describe('MessageService', () => {
       (rabbitmqService.sendToQueue as jest.Mock).mockResolvedValue(undefined);
       (prisma.user.findUnique as jest.Mock).mockResolvedValue(user);
 
-      const result = await service.sendMessage('***Test***', 'userId', 'convId');
+      const result = await service.sendMessage(
+        '***Test***',
+        'userId',
+        'convId',
+      );
 
       expect(rabbitmqService.sendToQueue).toHaveBeenCalledWith(
         expect.objectContaining({

@@ -93,7 +93,7 @@ describe('Message', () => {
 
     const message = response.body.data.sendMessage;
     expect(message).toBeDefined();
-    expect(message.content).toBe('It\'s a test!');
+    expect(message.content).toBe("It's a test!");
     expect(message.user.id).toBe(userId);
   });
 

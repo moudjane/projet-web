@@ -67,13 +67,7 @@ import { useRouter } from 'vue-router'
 import { useMutation } from '@vue/apollo-composable'
 import Input from '../ui/InputComponent .vue'
 import Button from '../ui/ButtonComponent.vue'
-import { graphql } from '../../gql/gql'
-
-const SIGNUP = graphql(`
-  mutation Signup($username: String!, $email: String!, $password: String!) {
-    signup(username: $username, email: $email, password: $password)
-  }
-`)
+import { SIGNUP } from '@/graphql/mutations'
 
 const router = useRouter()
 const isLoading = ref(false)

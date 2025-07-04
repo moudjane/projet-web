@@ -18,19 +18,19 @@
           <h3 class="text-sm font-medium text-gray-900 truncate">
             {{ getConversationName(conversation) }}
           </h3>
-          <!-- <span class="text-xs text-gray-500">
-            {{ formatDate(conversation.updatedAt) }}
-          </span> -->
+          <span class="text-xs text-gray-500">
+            {{ formatDate(conversation.messages[0]?.createdAt) }}
+          </span>
         </div>
         
-        <!-- <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between">
           <p class="text-sm text-gray-600 truncate">
-            <span v-if="conversation.lastMessage?.user.id === currentUserId" class="text-gray-500">
+            <span v-if="conversation.messages[0]?.user.id === currentUserId" class="text-gray-500">
               Vous: 
             </span>
-            {{ conversation.lastMessage?.content || 'Aucun message' }}
+            {{ conversation.messages[0]?.content || 'Aucun message' }}
           </p>
-        </div> -->
+        </div>
       </div>
     </div>
     
@@ -82,23 +82,23 @@ const getConversationName = (conversation: GetMyConversationsQuery['getMyConvers
   return participant?.username || 'Conversation'
 }
 
-// const formatDate = (date: string) => {
-//   const now = new Date()
-//   const messageDate = new Date(date)
-//   const diff = now.getTime() - messageDate.getTime()
-//   const minutes = Math.floor(diff / 60000)
-//   const hours = Math.floor(diff / 3600000)
-//   const days = Math.floor(diff / 86400000)
+const formatDate = (date: string) => {
+  const now = new Date()
+  const messageDate = new Date(date)
+  const diff = now.getTime() - messageDate.getTime()
+  const minutes = Math.floor(diff / 60000)
+  const hours = Math.floor(diff / 3600000)
+  const days = Math.floor(diff / 86400000)
 
-//   if (minutes < 1) return 'maintenant'
-//   if (minutes < 60) return `${minutes}min`
-//   if (hours < 24) return `${hours}h`
-//   if (days === 1) return 'hier'
-//   if (days < 7) return `${days}j`
+  if (minutes < 1) return 'maintenant'
+  if (minutes < 60) return `${minutes}min`
+  if (hours < 24) return `${hours}h`
+  if (days === 1) return 'hier'
+  if (days < 7) return `${days}j`
 
-//   return messageDate.toLocaleDateString('fr-FR', {
-//     day: 'numeric',
-//     month: 'short'
-//   })
-// }
+  return messageDate.toLocaleDateString('fr-FR', {
+    day: 'numeric',
+    month: 'short'
+  })
+}
 </script>

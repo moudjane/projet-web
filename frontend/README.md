@@ -1,39 +1,66 @@
 # projet-web-front
 
-This template should help get you started developing with Vue 3 in Vite.
+A modern messaging web application built with Vue 3, Vite, TypeScript, Apollo GraphQL, Pinia, and TailwindCSS.
 
-## Recommended IDE Setup
+---
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+### Project Setup
 
-## Type Support for `.vue` Imports in TS
+```sh
+git clone git@github.com:moudjane/projet-web.git
+```
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
+```sh
+cd projet-web/frontend
+```
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
-
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+---
+
+### Environment Variables
+
+Create a `.env` file and copy the content of `.env.example` into your new `.env` file.  
+
+---
+
+### Project structure
 
 ```sh
-npm run build
+client/
+├── components/    # Shared Vue components (forms, layout and dashboard.)
+├── pages/         # Top-level route pages
+├── ui/            # Small reusable UI primitives (Button, Input and Logo)
+├── stores/        # Pinia stores for app-wide state management
+├── gql/           # GraphQL codegen types and helpers (auto-generated)
+├── graphql/       # GraphQL queries, mutations, and fragments
+├── router/        # Vue Router configuration and routes
+└── App.vue        # Root Vue component
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+---
 
-```sh
-npm run lint
-```
+### Features
+
+#### Authentification
+- JWT authentication
+- Register and log in
+- Store JWT token locally
+- Logout
+
+#### Messaging
+- Create new conversations with other users
+- Send and receive messages in real time (GraphQL subscriptions)
+- View list of conversations and messages
+- Responsive chat interface
+
+#### Users
+- List all registered users
+- Search for users to start a new conversation
+- View and edit your profile (username, email, password)

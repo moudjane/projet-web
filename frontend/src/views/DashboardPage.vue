@@ -54,7 +54,7 @@ const showProfileModal = ref(false)
 const showUsersModal = ref(false)
 const isUpdatingProfile = ref(false)
 
-const { result: conversationsResult, refetch: refetchConversations } = useQuery(GET_MY_CONVERSATIONS)
+const { result: conversationsResult, refetch: refetchConversations } = useQuery(GET_MY_CONVERSATIONS, null, { pollInterval: 2000 })
 const { result: usersResult } = useQuery(GET_ALL_USERS)
 const { result: meResult } = useQuery(ME)
 

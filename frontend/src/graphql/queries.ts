@@ -48,6 +48,15 @@ export const GET_MY_CONVERSATIONS = graphql(`
         username
         email
       }
+      messages {
+        id
+        content
+        createdAt
+        user {
+          id
+          username
+        }
+      }
     }
   }
 `)

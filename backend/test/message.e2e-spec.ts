@@ -69,20 +69,20 @@ describe('Message', () => {
 
   it('should send a message in a conversation', async () => {
     const mutation = `
-  mutation {
-    sendMessage(
-      content: "It's a test!",
-      conversationId: "${conversationId}"
-    ) {
-      id
-      content
-      user {
-        id
-        username
-      }
-      createdAt
-    }
-  }
+        mutation {
+          sendMessage(
+            content: "It's a test!",
+            conversationId: "${conversationId}"
+          ) {
+            id
+            content
+            user {
+              id
+              username
+            }
+            createdAt
+          }
+        }
 `;
 
     const response = await request(app.getHttpServer())
@@ -93,7 +93,7 @@ describe('Message', () => {
 
     const message = response.body.data.sendMessage;
     expect(message).toBeDefined();
-    expect(message.content).toBe('It\'s a test!');
+    expect(message.content).toBe("It's a test!");
     expect(message.user.id).toBe(userId);
   });
 

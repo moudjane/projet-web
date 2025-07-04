@@ -36,3 +36,15 @@ export const UPDATE_PROFILE = graphql(`
     }
   }
 `)
+
+export const LOGIN = graphql(`
+  mutation Login($email: String!, $password: String!) {
+    login(email: $email, password: $password)
+  }
+`)
+
+export const SIGNUP = graphql(`
+  mutation Signup($username: String!, $email: String!, $password: String!) {
+    signup(username: $username, email: $email, password: $password)
+  }
+`)

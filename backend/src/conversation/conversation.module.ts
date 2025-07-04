@@ -3,6 +3,6 @@ import { ConversationService } from './conversation.service';
 import { ConversationResolver } from './conversation.resolver';
 
 @Module({
-  providers: [ConversationService, ConversationResolver]
+  providers: [ConversationService, ConversationResolver],
 })
 export class ConversationModule {}

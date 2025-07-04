@@ -67,13 +67,7 @@ import { useRouter } from 'vue-router'
 import { useMutation } from '@vue/apollo-composable'
 import Input from '../ui/InputComponent .vue'
 import Button from '../ui/ButtonComponent.vue'
-import { graphql } from '../../gql/gql'
-
-const SIGNUP = graphql(`
-  mutation Signup($username: String!, $email: String!, $password: String!) {
-    signup(username: $username, email: $email, password: $password)
-  }
-`)
+import { SIGNUP } from '@/graphql/mutations'
 
 const router = useRouter()
 const isLoading = ref(false)
@@ -104,7 +98,6 @@ const handleSubmit = async () => {
   errorMsg.value = null
 
   try {
-    // Peut être null, donc on vérifie
     const result = await signup({
       username: form.username,
       email: form.email,
@@ -116,7 +109,6 @@ const handleSubmit = async () => {
       return
     }
 
-    // Redirection si tout est ok
     router.push('/login')
   } catch (error: unknown) {
     if (error && typeof error === 'object' && 'graphQLErrors' in error) {

@@ -79,11 +79,11 @@ jobs:
       
       - name: Setup SSH Config
         run: |
-          echo "Host ec2
-            HostName ${{ secrets.EC2_HOST }}
-            User ec2-user
-            IdentityFile ~/.ssh/id_rsa
-            StrictHostKeyChecking no" > ~/.ssh/config
+          echo "Host ec2" > ~/.ssh/config
+          echo "  HostName ${{ secrets.EC2_HOST }}" >> ~/.ssh/config
+          echo "  User ec2-user" >> ~/.ssh/config
+          echo "  IdentityFile ~/.ssh/id_rsa" >> ~/.ssh/config
+          echo "  StrictHostKeyChecking no" >> ~/.ssh/config
       
       - name: Create deployment directory on EC2
         run: ssh ec2 'mkdir -p ~/app/backend'
@@ -99,8 +99,8 @@ jobs:
       - name: Setup environment file
         run: |
           ssh ec2 'cd ~/app/backend && cp .env.example .env'
-          ssh ec2 'cd ~/app/backend && echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> .env'
-          ssh ec2 'cd ~/app/backend && echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env'
+          ssh ec2 "cd ~/app/backend && echo 'DATABASE_URL=${{ secrets.DATABASE_URL }}' >> .env"
+          ssh ec2 "cd ~/app/backend && echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> .env"
           # Add any other environment variables needed
       
       - name: Setup PM2 and restart service

@@ -3,12 +3,8 @@ name: Backend CI
 on:
   push:
     branches: [ main, master ]
-    paths:
-      - '*'
   pull_request:
     branches: [ main, master ]
-    paths:
-      - '*'
   workflow_dispatch:
 
 jobs:
@@ -112,3 +108,12 @@ jobs:
       
       - name: Cleanup SSH key
         run: rm -f ~/.ssh/id_rsa
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: ./backend
+          push: false
+          load: true
+          tags: backend:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

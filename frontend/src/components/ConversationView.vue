@@ -1,5 +1,6 @@
 <template>
   <div class="h-full bg-gray flex flex-col">
+    <!-- Header de la conversation -->
     <header class="bg-white shadow-sm border-b flex-shrink-0">
       <div class="px-4 sm:px-6 lg:px-8">
         <div class="flex items-center h-16 space-x-4">
@@ -28,6 +29,7 @@
       </div>
     </header>
 
+    <!-- Zone des messages -->
     <div class="flex-1 overflow-hidden bg-chat-bg">
       <div 
         ref="messagesContainer"
